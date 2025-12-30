@@ -1,0 +1,391 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+
+const NLPService = () => {
+  const [inputText, setInputText] = useState('');
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [action, setAction] = useState('analyze');
+  
+  const sampleTexts = [
+    {
+      title: 'متن فناوری',
+      text: 'هوش مصنوعی در حال تغییر دنیای برنامه‌نویسی است. یادگیری ماشین و پردازش زبان طبیعی از مهم‌ترین شاخه‌های آن هستند.'
+    },
+    {
+      title: 'نظر مشتری',
+      text: 'این محصول واقعا عالی و کارآمد است. کیفیت ساخت بسیار خوب و قیمت مناسب دارد. کاملا راضی هستم!'
+    },
+    {
+      title: 'مقاله آموزشی',
+      text: 'برنامه‌نویسی وب نیاز به یادگیری چندین تکنولوژی دارد. HTML و CSS برای ساخت ظاهر، جاوااسکریپت برای تعامل و React برای رابط کاربری مدرن.'
+    }
+  ];
+  
+  const processText = async () => {
+    if (!inputText.trim()) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/v1/nlp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: inputText,
+          action: action
+        })
+      });
+      
+      const data = await response.json();
+      setResult(data);
+    } catch (error) {
+      setResult({
+        error: true,
+        message: 'خطا در پردازش متن'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleSample = (text) => {
+    setInputText(text);
+  };
+  
+  const clearAll = () => {
+    setInputText('');
+    setResult(null);
+  };
+  
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+          پردازش متن فارسی
+        </h2>
+        <div className="flex items-center space-x-2 space-x-reverse">
+          <span className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm">
+            NLP
+          </span>
+          <span className="text-sm text-gray-500">پردازش آنلاین</span>
+        </div>
+      </div>
+      
+      {/* نمونه‌های متن */}
+      <div className="mb-6">
+        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          متن‌های نمونه:
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {sampleTexts.map((sample, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleSample(sample.text)}
+              className="px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm transition"
+            >
+              {sample.title}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      {/* انتخاب عملیات */}
+      <div className="mb-6">
+        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          انتخاب عملیات:
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <button
+            onClick={() => setAction('analyze')}
+            className={`p-3 rounded-lg transition ${action === 'analyze' 
+              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-2 border-blue-300 dark:border-blue-700' 
+              : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+            }`}
+          >
+            <div className="font-medium">تحلیل متن</div>
+            <div className="text-xs mt-1">آمار و اطلاعات</div>
+          </button>
+          
+          <button
+            onClick={() => setAction('summarize')}
+            className={`p-3 rounded-lg transition ${action === 'summarize' 
+              ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-2 border-green-300 dark:border-green-700' 
+              : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+            }`}
+          >
+            <div className="font-medium">خلاصه‌سازی</div>
+            <div className="text-xs mt-1">متن کوتاه‌تر</div>
+          </button>
+          
+          <button
+            onClick={() => setAction('keywords')}
+            className={`p-3 rounded-lg transition ${action === 'keywords' 
+              ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 border-2 border-yellow-300 dark:border-yellow-700' 
+              : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+            }`}
+          >
+            <div className="font-medium">کلمات کلیدی</div>
+            <div className="text-xs mt-1">موضوع‌های اصلی</div>
+          </button>
+          
+          <button
+            onClick={() => setAction('sentiment')}
+            className={`p-3 rounded-lg transition ${action === 'sentiment' 
+              ? 'bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300 border-2 border-pink-300 dark:border-pink-700' 
+              : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+            }`}
+          >
+            <div className="font-medium">تحلیل احساسات</div>
+            <div className="text-xs mt-1">مثبت/منفی</div>
+          </button>
+          
+          <button
+            onClick={() => setAction('stats')}
+            className={`p-3 rounded-lg transition ${action === 'stats' 
+              ? 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 border-2 border-purple-300 dark:border-purple-700' 
+              : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+            }`}
+          >
+            <div className="font-medium">آمار کامل</div>
+            <div className="text-xs mt-1">همه اطلاعات</div>
+          </button>
+        </div>
+      </div>
+      
+      {/* ورودی متن */}
+      <div className="mb-6">
+        <textarea
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="متن فارسی خود را اینجا وارد کنید..."
+          className="w-full h-48 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          dir="rtl"
+        />
+        <div className="flex justify-between items-center mt-3">
+          <div className="text-sm text-gray-500">
+            {inputText.length} حرف • {inputText.split(/\s+/).filter(w => w.length > 0).length} کلمه
+          </div>
+          <button
+            onClick={clearAll}
+            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+          >
+            پاک کردن همه
+          </button>
+        </div>
+      </div>
+      
+      {/* دکمه پردازش */}
+      <div className="mb-8">
+        <button
+          onClick={processText}
+          disabled={loading || !inputText.trim()}
+          className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all ${loading || !inputText.trim()
+            ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+            : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
+          }`}
+        >
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <span className="ml-3">در حال پردازش...</span>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            `🔄 پردازش ${{
+              analyze: 'تحلیل متن',
+              summarize: 'خلاصه‌سازی',
+              keywords: 'کلمات کلیدی',
+              sentiment: 'تحلیل احساسات',
+              stats: 'آمار متن'
+            }[action]}`
+          )}
+        </button>
+      </div>
+      
+      {/* نمایش نتایج */}
+      {result && !result.error && result.success && (
+        <div className="mt-8 pt-8 border-t dark:border-gray-700">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+              نتایج پردازش
+            </h3>
+            <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm">
+              {result.processing_time}
+            </span>
+          </div>
+          
+          {/* نتایج بر اساس نوع عملیات */}
+          {action === 'analyze' && result.stats && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 p-4 rounded-xl">
+                  <div className="text-sm text-blue-600 dark:text-blue-400">طول متن</div>
+                  <div className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                    {result.stats.length}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">کاراکتر</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 p-4 rounded-xl">
+                  <div className="text-sm text-green-600 dark:text-green-400">تعداد کلمات</div>
+                  <div className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                    {result.stats.word_count}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">کلمه فارسی</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-4 rounded-xl">
+                  <div className="text-sm text-purple-600 dark:text-purple-400">حروف فارسی</div>
+                  <div className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                    {result.stats.char_count}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">حرف</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 p-4 rounded-xl">
+                  <div className="text-sm text-orange-600 dark:text-orange-400">زمان مطالعه</div>
+                  <div className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                    {Math.ceil(result.stats.word_count / 200)}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">دقیقه</div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">متن تمیز شده:</h4>
+                <p className="text-gray-800 dark:text-gray-200 leading-relaxed">
+                  {result.stats.cleaned_text || result.text}
+                </p>
+              </div>
+            </div>
+          )}
+          
+          {action === 'keywords' && result.keywords && (
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-700 dark:text-gray-300">کلمات کلیدی استخراج شده:</h4>
+              <div className="flex flex-wrap gap-2">
+                {result.keywords.map((keyword, idx) => (
+                  <span
+                    key={idx}
+                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full font-medium shadow"
+                  >
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+              <div className="text-sm text-gray-500 mt-2">
+                از بین {result.word_count} کلمه، {result.limit} کلمه کلیدی استخراج شد.
+              </div>
+            </div>
+          )}
+          
+          {action === 'sentiment' && result.sentiment && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium text-gray-700 dark:text-gray-300">نتیجه تحلیل احساسات:</h4>
+                <span className={`px-4 py-1 rounded-full text-sm font-bold ${
+                  result.sentiment.includes('مثبت') 
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                    : result.sentiment.includes('منفی')
+                    ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+                }`}>
+                  {result.sentiment}
+                </span>
+              </div>
+              
+              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">اطمینان تحلیل: {result.confidence}</div>
+                <div className="w-full bg-gray-200 dark:bg-gray-600 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full ${
+                      result.sentiment.includes('مثبت') 
+                        ? 'bg-gradient-to-r from-green-400 to-green-500'
+                        : result.sentiment.includes('منفی')
+                        ? 'bg-gradient-to-r from-red-400 to-red-500'
+                        : 'bg-gradient-to-r from-gray-400 to-gray-500'
+                    }`}
+                    style={{ 
+                      width: result.confidence === 'high' ? '90%' : 
+                             result.confidence === 'medium' ? '60%' : '30%' 
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {action === 'summarize' && result.summary && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 p-4 rounded-xl">
+                  <div className="text-sm text-blue-600 dark:text-blue-400">نسبت خلاصه‌سازی</div>
+                  <div className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                    {Math.round(result.ratio * 100)}%
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 p-4 rounded-xl">
+                  <div className="text-sm text-green-600 dark:text-green-400">میزان فشرده‌سازی</div>
+                  <div className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                    {result.compression_rate}
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-3">خلاصه تولید شده:</h4>
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <p className="text-gray-800 dark:text-gray-200 leading-relaxed text-lg">
+                    {result.summary}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="text-sm text-gray-500">
+                {result.original_sentences} جمله به {result.summary_sentences} جمله خلاصه شد.
+              </div>
+            </div>
+          )}
+          
+          {action === 'stats' && result.stats && (
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-700 dark:text-gray-300">آمار کامل متن:</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {Object.entries(result.stats).map(([key, value]) => (
+                  <div key={key} className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                      {key.replace('_', ' ')}
+                    </div>
+                    <div className="font-medium text-gray-800 dark:text-white">
+                      {typeof value === 'boolean' ? (value ? '✓' : '✗') : value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {result && result.error && (
+        <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+          <div className="text-red-700 dark:text-red-400 font-medium">خطا!</div>
+          <div className="text-red-600 dark:text-red-300 text-sm mt-1">
+            {result.message || 'خطای ناشناخته در پردازش'}
+          </div>
+        </div>
+      )}
+      
+      {/* اطلاعات سرویس */}
+      <div className="mt-8 pt-6 border-t dark:border-gray-700">
+        <div className="flex items-center text-sm text-gray-500">
+          <span className="ml-2">🔄</span>
+          <span>سرویس پردازش متن فارسی • v{result?.service?.version || '2.0.0'}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NLPService;

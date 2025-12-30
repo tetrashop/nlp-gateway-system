@@ -1,0 +1,198 @@
+import './index.css';
+
+function App() {
+  // داده‌های نمونه برای پروژه‌های NLP
+  const featuredProjects = [
+    { id: 254, title: 'پروژه نمونه ۲۵۴', description: 'پردازش متن فارسی پیشرفته', progress: 85, status: 'ویژه', icon: '🏆' },
+    { id: 255, title: 'پروژه نمونه ۲۵۵', description: 'تحلیل احساسات فارسی', progress: 90, status: 'محبوب', icon: '⭐' },
+    { id: 256, title: 'پروژه نمونه ۲۵۶', description: 'تولید متن هوش مصنوعی', progress: 95, status: 'جدید', icon: '🆕' }
+  ];
+
+  // داده‌های نمونه برای سرویس‌های AI
+  const aiServices = [
+    { id: 1, name: 'سرویس NLP 1', icon: '🗣️', description: 'پردازش زبان طبیعی' },
+    { id: 2, name: 'سرویس NLP 2', icon: '🔤', description: 'تحلیل متن' },
+    { id: 3, name: 'سرویس NLP 3', icon: '😊', description: 'تحلیل احساسات' },
+    { id: 4, name: 'سرویس NLP 4', icon: '📷', description: 'بینایی کامپیوتر' }
+  ];
+
+  // تابع تست API سلامت
+  const testHealthAPI = async () => {
+    try {
+      const response = await fetch('/api/health');
+      if (response.ok) {
+        const data = await response.json();
+        alert(`✅ API سلامت پاسخ داد:\nنسخه: ${data.version}\nوضعیت: ${data.status}`);
+      } else {
+        alert('⚠️ API سلامت پاسخ نداد (ممکن است سرور API اجرا نشده باشد)');
+      }
+    } catch (error) {
+      alert(`❌ خطا در تست API: ${error.message}\n\nتوصیه: سرور API را در پورت 3001 اجرا کنید.`);
+    }
+  };
+
+  // تابع تست NLP
+  const testNLP = () => {
+    const sampleText = "این یک متن نمونه فارسی برای تست است. محصول بسیار عالی و کارآمد است.";
+    alert(`🧪 تست NLP:\nمتن: "${sampleText}"\n\nدر نسخه کامل، این متن پردازش خواهد شد.`);
+  };
+
+  return (
+    <div dir="rtl" className="app-container">
+      {/* هدر اصلی */}
+      <header className="app-header">
+        <div className="header-content">
+          <h1 className="title">🚀 پلتفرم TetraSaaS v3.2</h1>
+          <p className="subtitle">بزرگترین مجموعه هوش مصنوعی فارسی</p>
+        </div>
+        <div className="header-actions">
+          <button className="btn btn-primary" onClick={testHealthAPI}>
+            تست API سلامت
+          </button>
+          <button className="btn btn-secondary" onClick={testNLP}>
+            تست NLP
+          </button>
+        </div>
+      </header>
+
+      {/* آمار کلی */}
+      <section className="stats-section">
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-number">۲۵۶</div>
+            <div className="stat-label">پروژه NLP</div>
+            <div className="stat-description">کامل‌ترین مجموعه فارسی</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">۳۲</div>
+            <div className="stat-label">سرویس AI</div>
+            <div className="stat-description">API آماده استفاده</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">۱۵K+</div>
+            <div className="stat-label">کاربر فعال</div>
+            <div className="stat-description">در ۳۰ روز گذشته</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">۹۹.۹٪</div>
+            <div className="stat-label">آپ‌تایم</div>
+            <div className="stat-description">پایدار و مطمئن</div>
+          </div>
+        </div>
+      </section>
+
+      {/* وضعیت API */}
+      <section className="status-section">
+        <div className="status-card">
+          <h2 className="section-title">🌐 وضعیت API اصلی</h2>
+          <div className="status-indicator">
+            <div className="status-dot online"></div>
+            <span className="status-text">آنلاین و فعال</span>
+          </div>
+          <div className="status-details">
+            <div className="status-item">
+              <span>پروژه‌ها:</span>
+              <strong>۲۵۶</strong>
+            </div>
+            <div className="status-item">
+              <span>سرویس‌ها:</span>
+              <strong>۳۲</strong>
+            </div>
+            <div className="status-item">
+              <span>پاسخ‌گویی:</span>
+              <strong>۹۹.۹٪</strong>
+            </div>
+          </div>
+          <div className="api-test">
+            <code className="api-code">
+              $ curl https://tetrashop-projects.vercel.app/api/health
+            </code>
+            <button className="btn btn-small" onClick={testHealthAPI}>
+              تست اتصال
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* پروژه‌های ویژه */}
+      <section className="projects-section">
+        <h2 className="section-title">🚀 پروژه‌های ویژه امروز</h2>
+        <div className="projects-grid">
+          {featuredProjects.map(project => (
+            <div key={project.id} className="project-card">
+              <div className="project-header">
+                <span className={`project-badge ${project.status}`}>
+                  {project.status} #{project.id}
+                </span>
+                <span className="project-icon">{project.icon}</span>
+              </div>
+              <h3 className="project-title">{project.title}</h3>
+              <p className="project-description">{project.description}</p>
+              <div className="project-progress">
+                <div className="progress-info">
+                  <span>پیشرفت</span>
+                  <span className="progress-percent">{project.progress}%</span>
+                </div>
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill"
+                    style={{ width: `${project.progress}%` }}
+                  ></div>
+                </div>
+              </div>
+              <button className="btn btn-outline">
+                مشاهده پروژه →
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* سرویس‌های AI */}
+      <section className="services-section">
+        <h2 className="section-title">⚡ ۳۲ سرویس هوش مصنوعی</h2>
+        <div className="services-grid">
+          {aiServices.map(service => (
+            <div key={service.id} className="service-card">
+              <div className="service-icon">{service.icon}</div>
+              <h3 className="service-title">{service.name}</h3>
+              <p className="service-description">{service.description}</p>
+              <button className="btn btn-service">
+                استفاده از API →
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="services-more">
+          <button className="btn btn-link">
+            مشاهده همه ۳۲ سرویس ⚡
+          </button>
+        </div>
+      </section>
+
+      {/* دکمه‌های اقدام */}
+      <section className="cta-section">
+        <div className="cta-buttons">
+          <button className="btn btn-primary btn-large">
+            🚀 شروع با پروژه اول
+          </button>
+          <button className="btn btn-secondary btn-large">
+            ⚡ مشاهده سرویس‌ها
+          </button>
+        </div>
+      </section>
+
+      {/* فوتر */}
+      <footer className="app-footer">
+        <p className="footer-text">
+          © ۲۰۲۴ TetraSaaS • نسخه ۳.۲ • ۳۲ سرویس کامل
+        </p>
+        <p className="footer-subtext">
+          ۲۵۶ پروژه NLP • ۳۲ سرویس AI • ۱۵٬۰۰۰+ کاربر فعال
+        </p>
+      </footer>
+    </div>
+  );
+}
+
+export default App;

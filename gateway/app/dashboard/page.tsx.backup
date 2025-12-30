@@ -1,0 +1,10 @@
+import NLPDashboard from '../../components/nlp/NLPDashboard';
+
+export const metadata = {
+  title: 'داشبورد مدیریت NLP - گیت‌وی یکپارچه',
+  description: 'مدیریت متمرکز ۲۸ سرویس پردازش زبان طبیعی فارسی',
+};
+
+export default function DashboardPage() {
+  return <NLPDashboard />;
+}

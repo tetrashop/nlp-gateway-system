@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # سرویس تحلیل احساسات
+  sentiment-service:
+    build: ./backend/sentiment-service
+    container_name: sentiment-analysis-service
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend/sentiment-service:/app
+    working_dir: /app
+    command: python main.py
+    restart: unless-stopped
+    networks:
+      - nlp-network
+
+  # API Gateway (Next.js)
+  api-gateway:
+    build: .
+    container_name: nlp-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - API_KEY=${API_KEY:-default-test-key}
+    depends_on:
+      - sentiment-service
+    restart: unless-stopped
+    networks:
+      - nlp-network
+
+networks:
+  nlp-network:
+    driver: bridge
+
+volumes:
+  model-cache:
