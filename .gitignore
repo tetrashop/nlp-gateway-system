@@ -1,0 +1,70 @@
+# Dependency directories
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+data/posts/*.json
+data/logs/
+*.log
+server.log
+chess.log
+ocr.log
+image2dto3d.log
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Backup files
+backups/
+*.bak
+*.backup
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Build outputs
+dist/
+build/
+.out/
+.next/
+
+# Coverage directory
+coverage/
+
+# Security
+*.pem
+*.key
+*.crt
+
+# Large data files
+*.zip
+*.tar.gz
+*.rar
+
+# Specific to NLP Gateway
+gateway/.next/
+gateway/node_modules/

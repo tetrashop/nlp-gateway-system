@@ -1,15 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
+  reactStrictMode: true,
+  // تنظیم پورت ثابت
+  env: {
+    PORT: 3000,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  swcMinify: false,
-  experimental: {
-    forceSwcTransforms: false,
-  },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

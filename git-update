@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# اسکریپت فوق‌سریع بروزرسانی GitHub
+
+cd ~/nlp-gateway-final 2>/dev/null || { echo "دایرکتوری یافت نشد"; exit 1; }
+
+# بررسی تغییرات
+CHANGES=$(git status --porcelain 2>/dev/null)
+if [ -z "$CHANGES" ]; then
+    echo "⚠️ هیچ تغییراتی برای commit وجود ندارد"
+    exit 0
+fi
+
+# نمایش تغییرات
+echo "📋 تغییرات شناسایی شده:"
+git status --short
+
+# اضافه کردن و commit
+echo "💾 ایجاد commit..."
+git add .
+git commit -m "بروزرسانی سریع: $(date '+%Y-%m-%d %H:%M:%S')"
+
+# همگام‌سازی با GitHub
+echo "🔄 همگام‌سازی با GitHub..."
+git pull --rebase origin main 2>/dev/null
+git push origin main 2>/dev/null && echo "✅ بروزرسانی موفق بود!" || echo "⚠️ خطا در بروزرسانی"
+
+# نمایش وضعیت نهایی
+echo ""
+echo "📊 وضعیت نهایی:"
+git log --oneline -3
