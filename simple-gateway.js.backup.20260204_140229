@@ -16,7 +16,7 @@ const nlpProcessor = new NLP168Processor();
 // روت اصلی
 app.get('/', (req, res) => {
     res.json({
-        message: '🚀 خوش آمدید به سیستم پردازش ۱۶۹ پست NLP',
+        message: '🚀 خوش آمدید به سیستم پردازش ۱۶۸ پست NLP',
         version: '1.0.0',
         endpoints: {
             home: '/',
@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
             analyze: '/api/analyze',
             health: '/api/health'
         },
-        description: 'سیستم پردازش زبان طبیعی با ۱۶۹ پست تخصصی'
+        description: 'سیستم پردازش زبان طبیعی با ۱۶۸ پست تخصصی'
     });
 });
 
@@ -262,7 +262,7 @@ app.post('/api/generate', async (req, res) => {
 app.listen(PORT, async () => {
     console.log(`\n🚀 سرور NLP Gateway روی پورت ${PORT} اجرا شد`);
     console.log(`🔗 آدرس: http://localhost:${PORT}`);
-    console.log(`📝 تعداد پست‌ها: 169 پست تخصصی NLP`);
+    console.log(`📝 تعداد پست‌ها: 168 پست تخصصی NLP`);
     console.log(`\n📌 نقاط دسترسی:`);
     console.log(`  📊 آمار کلی: http://localhost:${PORT}/api/stats`);
     console.log(`  📝 همه پست‌ها: http://localhost:${PORT}/api/posts`);
@@ -270,7 +270,7 @@ app.listen(PORT, async () => {
     console.log(`  🩺 سلامت: http://localhost:${PORT}/api/health`);
     
     // تولید پست‌ها در پس‌زمینه
-    console.log('\n🔄 در حال تولید 169 پست...');
+    console.log('\n🔄 در حال تولید 168 پست...');
     try {
         await nlpProcessor.generatePosts();
         console.log('✅ پست‌ها با موفقیت تولید شدند');
