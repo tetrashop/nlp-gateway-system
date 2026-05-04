@@ -1,0 +1,8 @@
+nohup: ignoring input
+127.0.0.1 - - [30/Apr/2026 13:42:56] code 404, message Not Found
+127.0.0.1 - - [30/Apr/2026 13:42:56] "POST /v1/clean HTTP/1.1" 404 -
+127.0.0.1 - - [30/Apr/2026 13:42:56] code 404, message Not Found
+127.0.0.1 - - [30/Apr/2026 13:42:56] "POST /v1/count HTTP/1.1" 404 -
+127.0.0.1 - - [30/Apr/2026 13:42:56] "GET /logs HTTP/1.1" 200 -
+127.0.0.1 - - [30/Apr/2026 13:45:14] code 404, message Not Found
+127.0.0.1 - - [30/Apr/2026 13:45:14] "POST /v1/filter HTTP/1.1" 404 -

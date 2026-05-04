@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>داشبورد NLP Gateway</title>
+<style>
+body{font-family:Tahoma, sans-serif;background:#f0f2f5;padding:20px;direction:rtl;}
+.container{max-width:800px;margin:auto;background:white;border-radius:10px;padding:20px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
+h1{color:#2c3e50;}
+.status-card{background:#ecf0f1;padding:15px;border-radius:8px;margin:15px 0;}
+.error{color:red;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🚀 NLP Gateway - داشبورد مدیریت</h1>
+<div id="status" class="status-card">در حال بارگذاری...</div>
+</div>
+<script>
+// گرفتن آدرس پایه سرور (همان جایی که صفحه از آن آمده)
+const baseUrl = window.location.origin;
+fetch(baseUrl + '/health')
+  .then(res => {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  })
+  .then(data => {
+    document.getElementById('status').innerHTML = `
+      <p><strong>وضعیت:</strong> ${data.status || 'نامشخص'}</p>
+      <p><strong>تعداد پست‌ها:</strong> ${data.postsCount ?? '-'}</p>
+      <p><strong>آپ‌تایم:</strong> ${data.uptime ?? '-'} ثانیه</p>
+      <p><strong>نسخه:</strong> ${data.version ?? '-'}</p>
+      <hr>
+      <p>✅ سرور فعال است.</p>
+    `;
+  })
+  .catch(err => {
+    document.getElementById('status').innerHTML = `
+      <div class="error">❌ خطا در ارتباط با سرور</div>
+      <p>مطمئن شوید سرور روی پورت <strong>1681</strong> در حال اجراست.</p>
+      <p>دستور تست در ترمینال: <code>curl http://localhost:1681/health</code></p>
+    `;
+    console.error(err);
+  });
+</script>
+</body>
+</html>

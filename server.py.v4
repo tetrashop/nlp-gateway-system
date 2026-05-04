@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+import json
+import datetime
+import os
+import re
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from app.handlers.sentiment import analyzer
+
+LOG_FILE = 'requests.jsonl'
+
+def log_request(endpoint, input_data, output_data):
+    with open(LOG_FILE, 'a', encoding='utf-8') as f:
+        f.write(json.dumps({
+            'timestamp': datetime.datetime.now().isoformat(),
+            'endpoint': endpoint,
+            'input': input_data,
+            'output': output_data
+        }, ensure_ascii=False) + '\n')
+
+class NLPHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        length = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(length)
+        try:
+            data = json.loads(body)
+            
+            # 1. تحلیل احساسات تکی
+            if self.path == '/v1/sentiment':
+                text = data.get('text', '')
+                if not text:
+                    self.send_error(400, 'Missing text')
+                    return
+                result = analyzer.analyze(text)
+                log_request('/v1/sentiment', text, result)
+                self._send_json(200, result)
+            
+            # 2. دسته‌جمعی
+            elif self.path == '/v1/sentiment/batch':
+                texts = data.get('texts', [])
+                if not isinstance(texts, list):
+                    self.send_error(400, 'Texts must be list')
+                    return
+                results = [analyzer.analyze(t) for t in texts]
+                log_request('/v1/sentiment/batch', texts, results)
+                self._send_json(200, {'results': results})
+            
+            # 3. پاکسازی متن
+            elif self.path == '/v1/clean':
+                text = data.get('text', '')
+                cleaned = analyzer.clean_text(text)
+                word_count = len(cleaned.split()) if cleaned else 0
+                result = {'cleaned_text': cleaned, 'word_count': word_count}
+                log_request('/v1/clean', text, result)
+                self._send_json(200, result)
+            
+            # 4. شمارش کاراکتر، کلمه، جمله
+            elif self.path == '/v1/count':
+                text = data.get('text', '')
+                words = text.split()
+                sentences = re.split(r'[.!?]+', text)
+                sentences = [s.strip() for s in sentences if s.strip()]
+                result = {
+                    'char_count': len(text),
+                    'word_count': len(words),
+                    'sentence_count': len(sentences)
+                }
+                log_request('/v1/count', text, result)
+                self._send_json(200, result)
+            
+            # 5. فیلتر کلمات نامناسب
+            elif self.path == '/v1/filter':
+                text = data.get('text', '')
+                replacement = data.get('replacement', '***')
+                filtered = analyzer.filter_bad_words(text, replacement)
+                result = {'original': text, 'filtered': filtered}
+                log_request('/v1/filter', text, result)
+                self._send_json(200, result)
+            
+            # 6. تبدیل اعداد فارسی به انگلیسی
+            elif self.path == '/v1/convert-numbers':
+                text = data.get('text', '')
+                converted = analyzer.convert_persian_numbers(text)
+                result = {'original': text, 'converted': converted}
+                log_request('/v1/convert-numbers', text, result)
+                self._send_json(200, result)
+            
+            # 7. تشخیص موجودیت‌ها (تاریخ، موبایل، ایمیل)
+            elif self.path == '/v1/entities':
+                text = data.get('text', '')
+                entities = analyzer.extract_entities(text)
+                log_request('/v1/entities', text, entities)
+                self._send_json(200, entities)
+            
+            # 8. خلاصه‌سازی متن
+            elif self.path == '/v1/summarize':
+                text = data.get('text', '')
+                num_sentences = data.get('num_sentences', 2)
+                summary = analyzer.summarize(text, num_sentences)
+                result = {'summary': summary, 'original_length': len(text), 'summary_length': len(summary)}
+                log_request('/v1/summarize', {'text': text[:50], 'num_sentences': num_sentences}, result)
+                self._send_json(200, result)
+            
+            else:
+                self.send_error(404, 'Not Found')
+        
+        except Exception as e:
+            self.send_error(500, str(e))
+    
+    def do_GET(self):
+        if self.path == '/health':
+            self._send_json(200, {'status': 'ok', 'version': '4.0'})
+        elif self.path == '/logs':
+            if not os.path.exists(LOG_FILE):
+                self._send_json(200, {'logs': []})
+                return
+            with open(LOG_FILE, 'r', encoding='utf-8') as f:
+                lines = f.readlines()[-20:]
+            self._send_json(200, {'logs': [json.loads(l) for l in lines]})
+        else:
+            self.send_error(404)
+    
+    def _send_json(self, code, data):
+        self.send_response(code)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
+
+def run(host='0.0.0.0', port=8000):
+    server = HTTPServer((host, port), NLPHandler)
+    print('NLP Gateway v4.0 (Full Edition)')
+    print('Endpoints:')
+    print('  1. POST /v1/sentiment        - احساسات یک متن')
+    print('  2. POST /v1/sentiment/batch  - دسته‌جمعی')
+    print('  3. POST /v1/clean            - پاکسازی متن')
+    print('  4. POST /v1/count            - شمارش کاراکتر/کلمه/جمله')
+    print('  5. POST /v1/filter           - فیلتر کلمات نامناسب')
+    print('  6. POST /v1/convert-numbers  - تبدیل اعداد فارسی به انگلیسی')
+    print('  7. POST /v1/entities         - تشخیص موجودیت (تاریخ، موبایل، ایمیل)')
+    print('  8. POST /v1/summarize        - خلاصه‌سازی ساده')
+    print('  9. GET  /health              - سلامت سرویس')
+    print(' 10. GET  /logs                - مشاهده لاگ‌ها')
+    server.serve_forever()
+
+if __name__ == '__main__':
+    run()

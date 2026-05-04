@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+import json
+from search_engine import search_posts
+from bale_bot import handle_message  # optional
+import subprocess, tempfile
+import datetime
+from search_engine import search_posts
+from bale_bot import handle_message  # optional
+import subprocess, tempfile
+import os
+from search_engine import search_posts
+from bale_bot import handle_message  # optional
+import subprocess, tempfile
+import re
+from search_engine import search_posts
+from bale_bot import handle_message  # optional
+import subprocess, tempfile
+import socket
+from search_engine import search_posts
+from bale_bot import handle_message  # optional
+import subprocess, tempfile
+import xml.etree.ElementTree as ET
+from search_engine import search_posts
+from bale_bot import handle_message  # optional
+import subprocess, tempfile
+import yaml
+from search_engine import search_posts
+from bale_bot import handle_message  # optional
+import subprocess, tempfile
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from app.handlers.sentiment import analyzer
+from app.handlers.translator import translator
+from app.database import save_request, get_requests, get_api_keys, add_api_key, remove_api_key, get_cache, set_cache
+from app.websocket import run_websocket_server
+from app.documentation import get_documentation_html
+
+API_KEYS = {'test-key-123': 'default_user', 'admin-key': 'admin'}
+
+def find_free_port():
+    """پیدا کردن یک پورت آزاد"""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0))
+        return s.getsockname()[1]
+
+def check_auth(headers):
+    api_key = headers.get('X-API-Key')
+    if not api_key:
+        return False, None
+    if api_key in API_KEYS:
+        return True, API_KEYS[api_key]
+    keys = get_api_keys()
+    for key, user, _ in keys:
+        if key == api_key:
+            return True, user
+    return False, None
+
+class NLPHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        is_auth, user = check_auth(self.headers)
+        
+        if self.path == '/health':
+            self._send_json(200, {'status': 'ok', 'version': '8.0', 'timestamp': datetime.datetime.now().isoformat()})
+        elif self.path == '/docs':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            self.wfile.write(get_documentation_html().encode('utf-8'))
+        else:
+            self.send_error(404)
+    
+    def do_POST(self):
+        is_auth, user = check_auth(self.headers)
+        if not is_auth:
+            self._send_json(401, {'error': 'Invalid API key'})
+            return
+        
+        length = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(length)
+        
+        try:
+            data = json.loads(body) if body else {}
+            
+            if self.path == '/v1/sentiment':
+                text = data.get('text', '')
+                result = analyzer.analyze(text, self.client_address[0])
+                self._send_json(200, result)
+            elif self.path == '/v1/detect-language':
+                text = data.get('text', '')
+                lang = analyzer.detect_language(text)
+                self._send_json(200, {'text': text, 'language': lang})
+            elif self.path == '/v1/translate':
+                text = data.get('text', '')
+                source = data.get('source', 'auto')
+                target = data.get('target', 'en')
+                result = translator.translate(text, source, target)
+                self._send_json(200, result)
+            else:
+                self.send_error(404)
+        except Exception as e:
+            self.send_error(500, str(e))
+    
+    def _send_json(self, code, data):
+        self.send_response(code)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
+
+def run():
+    port = find_free_port()
+    host = '0.0.0.0'
+    server = HTTPServer((host, port), NLPHandler)
+    print('=' * 50)
+    print('NLP Gateway v8.0')
+    print('=' * 50)
+    print(f'✅ Server running on http://{host}:{port}')
+    print(f'🔑 API Key: test-key-123')
+    print('=' * 50)
+    server.serve_forever()
+
+if __name__ == '__main__':
+    run()
+    def _parse_body(self):
+        length = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(length)
+        return json.loads(body) if body else {}

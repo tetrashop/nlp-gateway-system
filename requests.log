@@ -1,0 +1,6 @@
+2026-04-30T12:40:32.756091 | TEXT: این عالیه | RESULT: {"sentiment": "neutral", "confidence": 0.5, "score": 0.0, "matched_words": []}
+2026-04-30T12:40:32.757200 | TEXT: افتضاح بود | RESULT: {"sentiment": "negative", "confidence": 0.8, "score": -2.0, "matched_words": ["\u0627\u0641\u062a\u0636\u0627\u062d"]}
+2026-04-30T12:40:32.757961 | TEXT: متن معمولی | RESULT: {"sentiment": "neutral", "confidence": 0.5, "score": 0.0, "matched_words": []}
+2026-04-30T12:40:44.897127 | TEXT: این عالیه | RESULT: {"sentiment": "neutral", "confidence": 0.5, "score": 0.0, "matched_words": []}
+2026-04-30T12:40:44.897808 | TEXT: افتضاح بود | RESULT: {"sentiment": "negative", "confidence": 0.8, "score": -2.0, "matched_words": ["\u0627\u0641\u062a\u0636\u0627\u062d"]}
+2026-04-30T12:40:44.898288 | TEXT: متن معمولی | RESULT: {"sentiment": "neutral", "confidence": 0.5, "score": 0.0, "matched_words": []}

@@ -1,0 +1,7 @@
+version: '3'
+services:
+  nlp-gateway:
+    build: .
+    ports:
+      - "1680:1680"
+    restart: unless-stopped
