@@ -68,3 +68,5 @@ coverage/
 # Specific to NLP Gateway
 gateway/.next/
 gateway/node_modules/
+.vercel
+.env*
